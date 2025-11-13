@@ -1,0 +1,110 @@
+:root{
+      --bg: #f6f8fb;
+      --card: #ffffff;
+      --accent: #4f46e5; /* morado azul */
+      --muted: #6b7280;
+    }
+
+    body {
+      background: linear-gradient(180deg, var(--bg) 0%, #eef2ff 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+
+    .login-card {
+      width: 100%;
+      max-width: 920px;
+      background: var(--card);
+      border-radius: 12px;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: 1fr 440px;
+    }
+
+    .left-side {
+      padding: 36px;
+      background: linear-gradient(135deg, rgba(79,70,229,0.06), rgba(99,102,241,0.02));
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 18px;
+    }
+
+    .brand {
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+    .brand-logo {
+      width:46px;
+      height:46px;
+      border-radius:10px;
+      background: linear-gradient(135deg, var(--accent), #06b6d4);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:white;
+      font-weight:700;
+      box-shadow: 0 6px 18px rgba(79,70,229,0.12);
+    }
+
+    .left-side h2 {
+      margin:0;
+      font-size:1.6rem;
+      color:#0f172a;
+    }
+
+    .left-side p { color: var(--muted); margin:0; }
+
+    .illustration {
+      margin-top: 22px;
+      width:100%;
+      height:160px;
+      background-image: linear-gradient(180deg, rgba(99,102,241,0.06), rgba(79,70,229,0.02));
+      border-radius:10px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color: #4338ca;
+      font-weight:600;
+      letter-spacing: .6px;
+    }
+
+    .right-side {
+      padding: 36px;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      gap:16px;
+    }
+
+    .form-title {
+      font-weight:600;
+      font-size:1.25rem;
+      color:#0f172a;
+    }
+
+    .field-label {
+      font-size:0.85rem;
+      color:var(--muted);
+    }
+
+    .btn-primary {
+      background: linear-gradient(90deg, var(--accent), #06b6d4);
+      border: none;
+      box-shadow: 0 8px 20px rgba(79,70,229,0.12);
+    }
+
+    .small-muted { color: var(--muted); font-size:0.9rem; }
+
+    @media (max-width: 880px) {
+      .login-card {
+        grid-template-columns: 1fr;
+      }
+      .left-side { order: 2; padding: 20px; }
+      .right-side { order: 1; padding: 20px; }
+    }

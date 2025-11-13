@@ -12,6 +12,7 @@ public class Usuario {
 
     private String nombre;
     private String apellido;
+    private int edad;
     private String pais;
     private String email;
     private String password;
@@ -27,12 +28,13 @@ public class Usuario {
     	
     }
     
-    public Usuario(String nombre, String apellido, String pais, String email, String password) {
+    public Usuario(String nombre, String apellido, String pais, String email, String password, int edad) {
     	this.nombre=nombre;
     	this.apellido=apellido;
     	this.pais=pais;
     	this.email=email;
     	this.password=password;
+    	this.edad=edad;
     	this.saldo=0.0;
     }
 
@@ -106,6 +108,14 @@ public class Usuario {
 
 	public void setTransacciones(List<Transaccion> transacciones) {
 		this.transacciones = transacciones;
+	}
+	
+	public int getEdad() {
+		return edad;
+	}
+
+	public void setEdad(int edad) {
+		this.edad = edad;
 	}
 
 	@Override

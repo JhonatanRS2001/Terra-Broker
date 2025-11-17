@@ -7,13 +7,11 @@
     <!-- Bootstrap 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        body { 
-            background-color: #f4f6f8; 
-            font-family: Arial, sans-serif; 
-        }
+        body { background-color: #f4f6f8; font-family: Arial, sans-serif; }
         .navbar { background-color: #4f46e5; }
         .navbar-brand, .nav-link { color: white !important; }
         .card { border-radius: 10px; }
+        .activo-img { width: 40px; height: 40px; object-fit: contain; }
     </style>
 </head>
 <body>
@@ -37,8 +35,9 @@
     <!-- Contenido principal -->
     <div class="container mt-5">
         <h2>Bienvenido al Dashboard de TerraBroker</h2>
-        <p>Compra activos como BTC, SOL, ETH, visualiza graficos en directo, ¡NOS VAMOS AL CIELO JUNTO CON BITCOIN!.</p>
+        <p>Compra tus activos favoritos como BTC, ETH, SOL y visualiza sus precios en tiempo real.</p>
 
+        <!-- Información general -->
         <div class="row mt-4">
             <div class="col-md-4">
                 <div class="card p-3">
@@ -60,91 +59,80 @@
             </div>
         </div>
 
+        <!-- Tabla de activos para comprar -->
         <div class="row mt-4">
             <div class="col-12">
                 <div class="card p-3">
-                    <h5>Gráficos de prueba</h5>
-                    <canvas id="chartDemo" height="100"></canvas>
+                    <h5>Comprar Activos</h5>
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Imagen</th>
+                                <th>Activo</th>
+                                <th>Precio Actual</th>
+                                <th>Cantidad</th>
+                                <th>Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="activo : ${activos}">
+                                <td>
+                                    <img th:src="@{/img/{img}(img=${activo.imagen})}" class="activo-img" alt="Imagen">
+                                </td>
+                                <td th:text="${activo.nombre}">BTC</td>
+								<td th:id="'precio-' + ${activo.id}" th:text="${activo.precioActual} + ' €'">100 €</td>
+                                <td>
+                                    <input type="number" min="1" th:id="'cantidad_' + ${activo.id}" class="form-control" value="1">
+                                </td>
+                                <td>
+                                    <button class="btn btn-primary"
+                                            th:onclick="'comprarActivo(' + ${activo.id} + ',' + '\'' + '#cantidad_' + ${activo.id} + '\'' + ')'">
+                                        Comprar
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
-    </div>
-	
-	<div class="row mt-4">
-	    <div class="col-12">
-	        <div class="card p-3">
-	            <h5>Comprar Activos</h5>
-	            <table class="table">
-	                <thead>
-	                    <tr>
-							<th>Símbolo</th>
-	                        <th>Activo</th>
-	                        <th>Precio Actual</th>
-	                        <th>Cantidad</th>
-	                        <th>Acción</th>
-	                    </tr>
-	                </thead>
-	                <tbody>
-	                    <!-- Iteramos sobre todos los activos disponibles -->
-	                    <tr th:each="activo : ${activos}">
-							<td><img th:src="@{/img/{img}(img=${activo.imagen})}" alt="Imagen Activo" width="50"></td>
-							<td th:text="${activo.simbolo}"></td>
-	                        <td th:text="${activo.nombre}"></td>
-	                        <td th:text="${activo.precioActual} + ' €'"></td>
-	                        <td>
-	                            <input type="number" min="1" th:id="'cantidad_' + ${activo.id}" class="form-control" value="1">
-	                        </td>
-	                        <td>
-	                            <button class="btn btn-primary"
-	                                    th:onclick="'comprarActivo(' + ${activo.id} + ',' + '\'' + '#cantidad_' + ${activo.id} + '\'' + ')'">
-	                                Comprar
-	                            </button>
-	                        </td>
-	                    </tr>
-	                </tbody>
-	            </table>
-	        </div>
-	    </div>
-	</div>
-
-	<script>
-	    function comprarActivo(activoId, cantidadInputId) {
-	        const cantidad = document.getElementById(cantidadInputId.substring(1)).value; // quitamos el '#' de th:id
-	        fetch(`/comprar/${activoId}?cantidad=${cantidad}`, { method: 'POST' })
-	            .then(response => {
-	                if (response.ok) {
-	                    alert('Compra realizada correctamente!');
-	                    window.location.reload();
-	                } else {
-	                    alert('Error al comprar el activo.');
-	                }
-	            });
-	    }
-	</script>
-
-    <!-- Bootstrap JS y Chart.js -->
+		
+    <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        const ctx = document.getElementById('chartDemo').getContext('2d');
-        const chartDemo = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'],
-                datasets: [{
-                    label: 'Precio Activo A',
-                    data: [100, 105, 102, 110, 108],
-                    borderColor: '#4f46e5',
-                    backgroundColor: 'rgba(79,70,229,0.1)',
-                    tension: 0.3
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: { legend: { display: true } },
-                scales: { y: { beginAtZero: false } }
-            }
-        });
+        // Función para comprar activo
+        function comprarActivo(activoId, cantidadInputId) {
+            const cantidad = document.getElementById(cantidadInputId.substring(1)).value; // quitar #
+            fetch(`/comprar/${activoId}?cantidad=${cantidad}`, { method: 'POST' })
+                .then(response => {
+                    if (response.ok) {
+                        alert('Compra realizada correctamente!');
+                        window.location.reload();
+                    } else {
+                        alert('Error al comprar el activo.');
+                    }
+                });
+        }
     </script>
+	
+	<script>
+	    // Actualizar precios cada 5 segundos
+	    setInterval(() => {
+	        fetch('/api/precios')
+	            .then(res => res.json())
+	            .then(data => {
+
+	                // Por cada activo, actualizar el precio en la tabla
+	                Object.keys(data).forEach(id => {
+	                    const celda = document.getElementById('precio-' + id);
+	                    if (celda) {
+	                        celda.innerText = data[id] + ' €';
+	                    }
+	                });
+
+	            });
+	    }, 5000);
+	</script>
 </body>
 </html>

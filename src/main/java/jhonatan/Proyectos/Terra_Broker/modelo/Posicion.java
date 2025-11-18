@@ -12,6 +12,7 @@ public class Posicion {
     private Double cantidad;
     private Double precioPromedio;
     private Double valorActual;
+    private Double gananciaPerdida;
 
     @ManyToOne
     @JoinColumn(name = "cartera_id")
@@ -81,8 +82,20 @@ public class Posicion {
 		this.valorActual = valorActual;
 	}
 	
-	public void actualizarValorActual() {
-        this.valorActual = this.cantidad * this.activo.getPrecioActual();
+	public Double getGananciaPerdida() {
+		return gananciaPerdida;
+	}
+
+	public void setGananciaPerdida(Double gananciaPerdida) {
+		this.gananciaPerdida = gananciaPerdida;
+	}
+
+	// MÉTODO PARA ACTUALIZAR VALORES DINÁMICAMENTE
+    public void actualizarValores() {
+        if (activo != null && cantidad != null && precioPromedio != null) {
+            this.valorActual = cantidad * activo.getPrecioActual();
+            this.gananciaPerdida = this.valorActual - (cantidad * precioPromedio);
+        }
     }
 
 	@Override

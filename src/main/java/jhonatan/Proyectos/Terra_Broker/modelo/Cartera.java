@@ -2,6 +2,7 @@ package jhonatan.Proyectos.Terra_Broker.modelo;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -18,7 +19,7 @@ public class Cartera {
     private Usuario usuario;
 	
 	@OneToMany(mappedBy = "cartera", cascade = CascadeType.ALL)
-    private List<Posicion> posiciones;
+	private List<Posicion> posiciones = new ArrayList<>();
 	
 	public Cartera() {
 		this.fechaCreacion=LocalDateTime.now();

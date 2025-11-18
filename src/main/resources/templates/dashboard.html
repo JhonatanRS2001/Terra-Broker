@@ -42,7 +42,7 @@
             <div class="col-md-4">
                 <div class="card p-3">
                     <h5>Saldo disponible</h5>
-                    <p th:text="${1000.0} + ' €'">1000 €</p>
+					<p th:text="${usuario.saldo} + ' €'">0 €</p>
                 </div>
             </div>
             <div class="col-md-4">
@@ -97,24 +97,83 @@
             </div>
         </div>
 		
+		<div class="row mt-5">
+		    <div class="col-12">
+		        <div class="card p-3">
+		            <h5>Mi Cartera</h5>
+		            <table class="table table-hover">
+		                <thead>
+		                    <tr>
+		                        <th>Activo</th>
+		                        <th>Cantidad</th>
+		                        <th>Precio Promedio</th>
+		                        <th>Valor Actual</th>
+								<th>Ganancias/Perdidas</th>
+		                    </tr>
+		                </thead>
+		                <tbody>
+		                    <tr th:each="posicion : ${usuario.cartera.posiciones}">
+		                        <td th:text="${posicion.activo.nombre}">BTC</td>
+		                        <td th:text="${posicion.cantidad}">1.5</td>
+		                        <td th:text="${posicion.precioPromedio} + ' €'">120 €</td>
+		                        <td th:text="${posicion.valorActual} + ' €'">180 €</td>
+								<td th:text="${posicion.gananciaPerdida} + ' €'">180 €</td>
+		                    </tr>
+		                    <tr th:if="${#lists.isEmpty(usuario.cartera.posiciones)}">
+		                        <td colspan="4" class="text-center">No tienes activos en tu cartera</td>
+		                    </tr>
+		                </tbody>
+		            </table>
+		        </div>
+		    </div>
+		</div>
+		
+		<div class="card p-3" style="margin-top: 30px;">
+		    <h5>Ingresar saldo</h5>
+		    <div class="input-group">
+		        <input type="number" min="1" id="cantidadSaldo" class="form-control" placeholder="Cantidad a ingresar">
+		        <button class="btn btn-success" onclick="ingresarSaldo()">Ingresar</button>
+		    </div>
+		</div>
+		
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-        // Función para comprar activo
-        function comprarActivo(activoId, cantidadInputId) {
-            const cantidad = document.getElementById(cantidadInputId.substring(1)).value; // quitar #
-            fetch(`/comprar/${activoId}?cantidad=${cantidad}`, { method: 'POST' })
-                .then(response => {
-                    if (response.ok) {
-                        alert('Compra realizada correctamente!');
-                        window.location.reload();
-                    } else {
-                        alert('Error al comprar el activo.');
-                    }
-                });
-        }
-    </script>
+	<script>
+	function comprarActivo(activoId, cantidadInputId) {
+	    const cantidad = document.getElementById(cantidadInputId.substring(1)).value; // quitar #
+	    
+	    fetch(`/api/comprar/${activoId}?cantidad=${cantidad}`, { method: 'POST' })
+	        .then(response => response.json())
+	        .then(data => {
+	            if (data.mensaje) {
+	                alert(data.mensaje); // Compra correcta
+	                window.location.reload();
+	            } else if (data.error) {
+	                alert("Error: " + data.error); // Mostrar error del servidor
+	            }
+	        })
+	        .catch(err => {
+	            console.error(err);
+	            alert("Error en la conexión con el servidor");
+	        });
+	}
+	
+	function ingresarSaldo() {
+	    const cantidad = document.getElementById("cantidadSaldo").value;
+
+	    fetch(`/api/ingresarSaldo?cantidad=${cantidad}`, { method: "POST" })
+	        .then(res => res.json())
+	        .then(data => {
+	            if (data.mensaje) {
+	                alert(data.mensaje);
+	                window.location.reload();
+	            } else {
+	                alert("Error: " + data.error);
+	            }
+	        });
+	}
+	</script>
 	
 	<script>
 	    // Actualizar precios cada 5 segundos

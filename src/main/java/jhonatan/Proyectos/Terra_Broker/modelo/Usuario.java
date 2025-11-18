@@ -16,7 +16,7 @@ public class Usuario {
     private String pais;
     private String email;
     private String password;
-    private Double saldo;
+    private Double saldo=0.00;
 
     @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL)
     private Cartera cartera;
@@ -35,7 +35,7 @@ public class Usuario {
     	this.email=email;
     	this.password=password;
     	this.edad=edad;
-    	this.saldo=0.0;
+    	this.saldo=0.00;
     }
 
 	public Long getId() {

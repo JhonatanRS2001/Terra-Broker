@@ -1,6 +1,7 @@
 package jhonatan.Proyectos.Terra_Broker.util;
-
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,11 +33,9 @@ public class CarteraService {
 
     @Transactional
     public void comprarActivo(Long usuarioId, Long activoId, double cantidad) throws Exception {
-        Usuario usuario = usuarioRepository.findById(usuarioId)
-                .orElseThrow(() -> new Exception("Usuario no encontrado"));
+        Usuario usuario = usuarioRepository.findById(usuarioId).orElseThrow(() -> new Exception("Usuario no encontrado"));
 
-        Activo activo = activoRepository.findById(activoId)
-                .orElseThrow(() -> new Exception("Activo no encontrado"));
+        Activo activo = activoRepository.findById(activoId).orElseThrow(() -> new Exception("Activo no encontrado"));
 
         double totalCompra = cantidad * activo.getPrecioActual();
 
@@ -53,11 +52,8 @@ public class CarteraService {
         }
 
         // BUSCAR SI EXISTE POSICION
-        Posicion posicion = cartera.getPosiciones() != null
-                ? cartera.getPosiciones().stream()
-                    .filter(p -> p.getActivo().getId().equals(activoId))
-                    .findFirst().orElse(null)
-                : null;
+        Posicion posicion = cartera.getPosiciones() != null? cartera.getPosiciones().stream().filter(p -> p.getActivo().getId().equals(activoId))
+                    .findFirst().orElse(null): null;
 
         if (posicion != null) {
             // ACTUALIZAR CANTIDAD Y PRECIO PROMEDIO
@@ -87,12 +83,59 @@ public class CarteraService {
         usuarioRepository.save(usuario);
         carteraRepository.save(cartera);
     }
+    
+    @Transactional
+    public Map<String, Object> venderActivo(Long usuarioId, Long activoId, Double cantidadAVender) throws Exception {
+
+        Usuario usuario = usuarioRepository.findById(usuarioId).orElseThrow(() -> new Exception("Usuario no encontrado"));
+
+        Cartera cartera = usuario.getCartera();
+
+        Posicion posicion = cartera.getPosiciones().stream().filter(p -> p.getActivo().getId().equals(activoId)).findFirst()
+                .orElseThrow(() -> new Exception("No tienes este activo en tu cartera"));
+
+        if (cantidadAVender == null || cantidadAVender <= 0)
+            throw new Exception("La cantidad debe ser mayor que 0");
+
+        if (posicion.getCantidad() < cantidadAVender)
+            throw new Exception("No puedes vender más cantidad de la que tienes");
+
+        //PRECIO ACTUAL
+        Double precioActual = posicion.getActivo().getPrecioActual();
+
+        //CALCULAR VALORES REALES
+        Double totalVenta = precioActual * cantidadAVender;
+        Double costoOriginal = posicion.getPrecioPromedio() * cantidadAVender;
+        Double ganancia = totalVenta - costoOriginal;
+
+        //ACTUALIZAR POSICION
+        Double nuevaCantidad = posicion.getCantidad() - cantidadAVender;
+
+        if (nuevaCantidad <= 0) {
+            cartera.getPosiciones().remove(posicion);
+        } else {
+            posicion.setCantidad(nuevaCantidad);
+        }
+
+        // SUMAR SOLO EL TOTAL DE LA VENTA
+        usuario.setSaldo(usuario.getSaldo() + totalVenta);
+
+        usuarioRepository.save(usuario);
+        carteraRepository.save(cartera);
+
+        Map<String, Object> resultado = new HashMap<>();
+        resultado.put("activo", posicion.getActivo().getNombre());
+        resultado.put("cantidadVendida", cantidadAVender);
+        resultado.put("ganancia", ganancia);
+        resultado.put("cantidadRestante", Math.max(0, nuevaCantidad));
+
+        return resultado;
+    }
 
     // MÉTODO PARA ACTUALIZAR TODAS LAS POSICIONES DE UNA CARTERA
     @Transactional
     public void actualizarPosicionesCartera(Long usuarioId) throws Exception {
-        Usuario usuario = usuarioRepository.findById(usuarioId)
-                .orElseThrow(() -> new Exception("Usuario no encontrado"));
+        Usuario usuario = usuarioRepository.findById(usuarioId).orElseThrow(() -> new Exception("Usuario no encontrado"));
 
         Cartera cartera = usuario.getCartera();
         if (cartera != null && cartera.getPosiciones() != null) {

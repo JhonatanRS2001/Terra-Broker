@@ -45,12 +45,12 @@
 					<p th:text="${usuario.saldo} + ' €'">0 €</p>
                 </div>
             </div>
-            <div class="col-md-4">
-                <div class="card p-3">
-                    <h5>Posiciones</h5>
-                    <p th:text="${5} + ' activos'">5 activos</p>
-                </div>
-            </div>
+			<div class="col-md-4">
+			    <div class="card p-3">
+			        <h5>Posiciones</h5>
+			        <p th:text="${usuario.cartera.posiciones.size()} + ' activos'">0 activos</p>
+			    </div>
+			</div>
             <div class="col-md-4">
                 <div class="card p-3">
                     <h5>Transacciones</h5>
@@ -106,9 +106,10 @@
 		                    <tr>
 		                        <th>Activo</th>
 		                        <th>Cantidad</th>
-		                        <th>Precio Promedio</th>
+		                        <th>Precio Promedio Comprado</th>
 		                        <th>Valor Actual</th>
 								<th>Ganancias/Perdidas</th>
+								<th>Acción</th>
 		                    </tr>
 		                </thead>
 		                <tbody>
@@ -118,6 +119,12 @@
 		                        <td th:text="${posicion.precioPromedio} + ' €'">120 €</td>
 		                        <td th:text="${posicion.valorActual} + ' €'">180 €</td>
 								<td th:text="${posicion.gananciaPerdida} + ' €'">180 €</td>
+								<td>
+								    <button class="btn btn-danger" 
+								            th:onclick="'venderActivo(' + ${posicion.activo.id} + ')'">
+								        Vender
+								    </button>
+								</td>
 		                    </tr>
 		                    <tr th:if="${#lists.isEmpty(usuario.cartera.posiciones)}">
 		                        <td colspan="4" class="text-center">No tienes activos en tu cartera</td>
@@ -156,6 +163,31 @@
 	        .catch(err => {
 	            console.error(err);
 	            alert("Error en la conexión con el servidor");
+	        });
+	}
+	
+	function venderActivo(activoId) {
+	    const cantidad = prompt("¿Cuánta cantidad quieres vender?");
+
+	    if (!cantidad || cantidad <= 0) {
+	        alert("Cantidad inválida");
+	        return;
+	    }
+
+	    fetch(`/api/vender/${activoId}?cantidad=${cantidad}`, { method: 'POST' })
+	        .then(res => res.json())
+	        .then(data => {
+	            if (data.error) {
+	                alert("Error: " + data.error);
+	            } else {
+	                alert(
+	                    `Venta realizada:\n` +
+	                    `Activo: ${data.activo}\n` +
+	                    `Cantidad vendida: ${data.cantidadVendida}\n` +
+	                    `Ganancia/Pérdida: ${data.gananciaPerdida.toFixed(2)} €`
+	                );
+	                window.location.reload();
+	            }
 	        });
 	}
 	

@@ -7,5 +7,6 @@ import jhonatan.Proyectos.Terra_Broker.modelo.Activo;
 
 @Repository
 public interface ActivoRepository extends JpaRepository<Activo, Long> {
+	boolean existsByNombre(String nombre);
     
 }

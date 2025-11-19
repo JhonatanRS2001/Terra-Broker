@@ -18,7 +18,7 @@ public class Cartera {
     @JoinColumn(name = "usuario_id")
     private Usuario usuario;
 	
-	@OneToMany(mappedBy = "cartera", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "cartera", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Posicion> posiciones = new ArrayList<>();
 	
 	public Cartera() {

@@ -31,5 +31,9 @@ public class TerraBrokerDAO {
 			System.out.println("Usuario no encontrado con el ID proporcionado.");
 		}
 	}
+	
+	public Usuario consultaUsuario(Long id) {
+		return em.find(Usuario.class, id);
+	}
 
 }

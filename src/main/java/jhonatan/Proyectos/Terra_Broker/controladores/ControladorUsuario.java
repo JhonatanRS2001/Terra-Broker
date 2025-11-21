@@ -50,6 +50,19 @@ public class ControladorUsuario {
         return "confirmacionRegistro";
     }
     
+    @PostMapping("/miCuenta/actualizar")
+    public String actualizarMisDatos(Usuario usuario) {
+        dao.modificarUsuario(usuario);
+        return "confirmacion";
+    }
+    
+    @GetMapping("/miCuenta")
+    public String accederCuenta(Model model, @AuthenticationPrincipal MyUserDetails userDetails) {
+    	Usuario usuario = usuarioRepository.findById(userDetails.getUsuario().getId()).orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        model.addAttribute("usuario", usuario);
+        return "miCuenta";
+    }
+    
     @PostMapping("/api/ingresarSaldo")
     public ResponseEntity<?> ingresarSaldo(@RequestParam double cantidad,@AuthenticationPrincipal MyUserDetails userDetails) {
 
@@ -62,4 +75,6 @@ public class ControladorUsuario {
 
         return ResponseEntity.ok(Map.of("mensaje", "Saldo ingresado correctamente"));
     }
+    
+    
 }

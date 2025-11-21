@@ -10,6 +10,7 @@ import jakarta.transaction.Transactional;
 import jhonatan.Proyectos.Terra_Broker.modelo.Activo;
 import jhonatan.Proyectos.Terra_Broker.modelo.Cartera;
 import jhonatan.Proyectos.Terra_Broker.modelo.Posicion;
+import jhonatan.Proyectos.Terra_Broker.modelo.Transaccion;
 import jhonatan.Proyectos.Terra_Broker.modelo.Usuario;
 import jhonatan.Proyectos.Terra_Broker.repository.ActivoRepository;
 import jhonatan.Proyectos.Terra_Broker.repository.CarteraRepository;
@@ -79,6 +80,10 @@ public class CarteraService {
 
         // ACTUALIZAR SALDO USUARIO
         usuario.setSaldo(usuario.getSaldo() - totalCompra);
+        
+        //REGISTRAR TRANSACCIÓN COMPRA
+        Transaccion transaccion = new Transaccion(usuario,activo,"COMPRA",cantidad,activo.getPrecioActual());
+        usuario.getTransacciones().add(transaccion);
 
         usuarioRepository.save(usuario);
         carteraRepository.save(cartera);
@@ -119,6 +124,10 @@ public class CarteraService {
 
         // SUMAR SOLO EL TOTAL DE LA VENTA
         usuario.setSaldo(usuario.getSaldo() + totalVenta);
+        
+        //REGISTRAR TRANSACCIÓN DE VENTA
+        Transaccion tx = new Transaccion(usuario, posicion.getActivo(), "VENTA", cantidadAVender, precioActual, ganancia);
+        usuario.getTransacciones().add(tx);
 
         usuarioRepository.save(usuario);
         carteraRepository.save(cartera);

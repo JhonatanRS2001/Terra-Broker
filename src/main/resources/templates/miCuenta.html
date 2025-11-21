@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Cuenta - TerraBroker</title>
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body { background-color: #f4f6f8; font-family: Arial, sans-serif; }
+        .navbar { background-color: #4f46e5; }
+        .navbar-brand, .nav-link { color: white !important; }
+        .card { border-radius: 10px; }
+        h2 { margin-bottom: 0.5rem; }
+		footer { text-align: center; padding: 1.5em; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; color: #222831; background-size: 400% 400%;}
+    </style>
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container-fluid">
+            <a class="navbar-brand" th:href="@{/dashboard}">TerraBroker</a>
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link"
+                           th:text="'Hola, ' + ${usuario.nombre} + ' ' + ${usuario.apellido}">
+                            Usuario
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/logout}">Cerrar sesión</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <div class="container mt-5">
+
+        <h2>Mi Cuenta</h2>
+        <p>Visualiza y actualiza tu información personal.</p>
+
+        <div class="row mt-4">
+
+            <!-- SALDO DISPONIBLE -->
+            <div class="col-md-4 mb-4">
+                <div class="card p-3">
+                    <h5>Saldo Disponible</h5>
+                    <p th:text="${#numbers.formatDecimal(usuario.saldo, 1, 'POINT', 2, 'POINT')} + ' €'">
+                        0.00 €
+                    </p>
+
+                    <!-- INGRESAR SALDO -->
+                    <div class="mt-3">
+                        <h6 style="margin-top: 38px;">Ingresar saldo</h6>
+                        <div class="input-group">
+                            <input type="number" min="1" id="cantidadSaldo" class="form-control" placeholder="Cantidad a ingresar">
+                            <button class="btn btn-success" onclick="ingresarSaldo()">Ingresar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- INFORMACIÓN PERSONAL -->
+            <div class="col-md-8 mb-4">
+                <div class="card p-3">
+                    <h5>Información Personal</h5>
+
+                    <p><strong>Nombre:</strong> 
+                        <span th:text="${usuario.nombre}">Juan</span>
+                    </p>
+
+                    <p><strong>Apellido:</strong> 
+                        <span th:text="${usuario.apellido}">Pérez</span>
+                    </p>
+
+                    <p><strong>Email:</strong> 
+                        <span th:text="${usuario.email}">correo@example.com</span>
+                    </p>
+
+                    <p><strong>País:</strong> 
+                        <span th:text="${usuario.pais}">España</span>
+                    </p>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- FORMULARIO ACTUALIZAR DATOS -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="card p-3">
+                    <h5>Actualizar Datos</h5>
+
+                    <form th:action="@{/miCuenta/actualizar}" method="post">
+
+                        <input type="hidden" name="id" th:value="${usuario.id}">
+
+                        <div class="mb-3">
+                            <label class="form-label" for="nombre">Nombre</label>
+                            <input id="nombre" name="nombre" type="text" class="form-control"
+                                   th:value="${usuario.nombre}">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label" for="apellido">Apellido</label>
+                            <input id="apellido" name="apellido" type="text" class="form-control"
+                                   th:value="${usuario.apellido}">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label" for="pais">País</label>
+                            <input id="pais" name="pais" type="text" class="form-control"
+                                   th:value="${usuario.pais}">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label" for="email">Email</label>
+                            <input id="email" name="email" type="email" class="form-control"
+                                   th:value="${usuario.email}">
+                        </div>
+
+                        <button class="btn btn-primary" type="submit">Actualizar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- HISTORIAL DE TRANSACCIONES -->
+        <div class="card p-3">
+            <h5>Historial de Transacciones</h5>
+            <div class="table-responsive">
+                <table class="table table-striped mb-0">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Activo</th>
+                            <th>Tipo</th>
+                            <th>Cantidad</th>
+                            <th>Precio Compra/Venta</th>
+                            <th>Resultado Transaccion</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="tx : ${usuario.transacciones}">
+                            <td th:text="${#temporals.format(tx.fecha, 'dd/MM/yyyy HH:mm')}"></td>
+                            <td th:text="${tx.activo.nombre}"></td>
+                            <td th:text="${tx.tipo}"></td>
+                            <td th:text="${#numbers.formatDecimal(tx.cantidad,1,'POINT',2,'POINT')}"></td>
+                            <td th:text="${#numbers.formatDecimal(tx.precioUnitario,1,'POINT',2,'POINT')} + ' €'"></td>
+                            <td th:text="${#numbers.formatDecimal(tx.total,1,'POINT',2,'POINT')} + ' €'"></td>
+                        </tr>
+
+                        <tr th:if="${#lists.isEmpty(usuario.transacciones)}">
+                            <td colspan="6" class="text-center">Aún no tienes transacciones.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+	
+	<footer>
+		<p>© 2025 Jhonatan Romero - Software Developer</p>
+	</footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        function ingresarSaldo() {
+            const cantidad = document.getElementById("cantidadSaldo").value;
+            fetch(`/api/ingresarSaldo?cantidad=${cantidad}`, { method: "POST" })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.mensaje) {
+                        alert(data.mensaje);
+                        window.location.reload();
+                    } else {
+                        alert("Error: " + data.error);
+                    }
+                });
+        }
+    </script>
+
+</body>
+</html>

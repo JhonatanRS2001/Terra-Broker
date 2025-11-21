@@ -24,13 +24,27 @@ public class Transaccion {
     @JoinColumn(name = "activo_id")
     private Activo activo;
     
+    public Transaccion() {
+    	
+    }
+    
+    public Transaccion(Usuario usuario, Activo activo, String tipo, Double cantidad, Double precioUnitario, Double total) {
+        this.usuario = usuario;
+        this.activo = activo;
+        this.tipo = tipo;
+        this.cantidad = cantidad;
+        this.precioUnitario = precioUnitario;
+        this.total = total;
+        this.fecha = LocalDateTime.now(); // Se asigna la fecha al crear la transacción
+    }
+    
     public Transaccion(Usuario usuario, Activo activo, String tipo, Double cantidad, Double precioUnitario) {
         this.usuario = usuario;
         this.activo = activo;
         this.tipo = tipo;
         this.cantidad = cantidad;
         this.precioUnitario = precioUnitario;
-        this.total = cantidad * precioUnitario;
+        this.total = 0.00;
         this.fecha = LocalDateTime.now(); // Se asigna la fecha al crear la transacción
     }
     
@@ -97,7 +111,7 @@ public class Transaccion {
 	public void setActivo(Activo activo) {
 		this.activo = activo;
 	}
-
+	
 	@Override
 	public String toString() {
 		return "Transaccion [id=" + id + ", fecha=" + fecha + ", tipo=" + tipo + ", cantidad=" + cantidad

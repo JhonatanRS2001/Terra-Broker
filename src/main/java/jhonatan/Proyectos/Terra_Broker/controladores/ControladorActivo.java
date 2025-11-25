@@ -57,8 +57,8 @@ public class ControladorActivo {
     @PostMapping("/vender/{activoId}")
     public ResponseEntity<?> venderActivo(@PathVariable Long activoId, @RequestParam Double cantidad,@AuthenticationPrincipal MyUserDetails userDetails) {
         try {
-            Map<String, Object> resultado = carteraService.venderActivo(userDetails.getUsuario().getId(), activoId, cantidad);
-            return ResponseEntity.ok(resultado);
+            carteraService.venderActivo(userDetails.getUsuario().getId(), activoId, cantidad);
+            return ResponseEntity.ok(Map.of("mensaje", "Venta realizada correctamente"));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }

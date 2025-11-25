@@ -1,8 +1,6 @@
 package jhonatan.Proyectos.Terra_Broker.util;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
+import java.util.ArrayList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -90,7 +88,7 @@ public class CarteraService {
     }
     
     @Transactional
-    public Map<String, Object> venderActivo(Long usuarioId, Long activoId, Double cantidadAVender) throws Exception {
+    public void venderActivo(Long usuarioId, Long activoId, Double cantidadAVender) throws Exception {
 
         Usuario usuario = usuarioRepository.findById(usuarioId).orElseThrow(() -> new Exception("Usuario no encontrado"));
 
@@ -131,14 +129,6 @@ public class CarteraService {
 
         usuarioRepository.save(usuario);
         carteraRepository.save(cartera);
-
-        Map<String, Object> resultado = new HashMap<>();
-        resultado.put("activo", posicion.getActivo().getNombre());
-        resultado.put("cantidadVendida", cantidadAVender);
-        resultado.put("ganancia", ganancia);
-        resultado.put("cantidadRestante", Math.max(0, nuevaCantidad));
-
-        return resultado;
     }
 
     // MÉTODO PARA ACTUALIZAR TODAS LAS POSICIONES DE UNA CARTERA

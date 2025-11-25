@@ -4,27 +4,41 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - TerraBroker</title>
+
     <!-- Bootstrap 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
     <style>
         body { background-color: #f4f6f8; font-family: Arial, sans-serif; }
         .navbar { background-color: #4f46e5; }
         .navbar-brand, .nav-link { color: white !important; }
         .card { border-radius: 10px; }
         .activo-img { width: 40px; height: 40px; object-fit: contain; }
-		footer { text-align: center; padding: 1.5em; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; color: #222831; background-size: 400% 400%;}
+        footer {
+            text-align: center; padding: 1.5em;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0; color: #222831;
+        }
+
+        /* Tamaño de los gráficos */
+        .grafico-cripto {
+            height: 200px !important;
+            max-height: 200px !important;
+        }
     </style>
 </head>
+
 <body>
+
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg">
         <div class="container-fluid">
             <a class="navbar-brand" href="#">TerraBroker</a>
             <div class="collapse navbar-collapse">
                 <ul class="navbar-nav ms-auto">
-					<li class="nav-item">
-						<a class="nav-link" th:href="@{/miCuenta}">Mi cuenta</a>
-					</li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/miCuenta}">Mi cuenta</a>
+                    </li>
                     <li class="nav-item">
                         <a class="nav-link" th:href="@{/logout}">Cerrar sesión</a>
                     </li>
@@ -35,23 +49,26 @@
 
     <!-- Contenido principal -->
     <div class="container mt-5">
+
         <h2 th:text="'Hola ' + ${#authentication.principal.nombre} + ' ' + ${#authentication.principal.apellido} + ', bienvenido al dashboard de TerraBroker'"></h2>
         <p>Compra tus activos favoritos como BTC, ETH, SOL y demás, visualiza sus precios en tiempo real.</p>
 
         <!-- Información general -->
         <div class="row mt-4">
-			<div class="col-md-4">
-			    <div class="card p-3">
-			        <h5>Saldo disponible</h5>
-			        <p th:text="${#numbers.formatDecimal(usuario.saldo, 1, 'POINT', 2, 'POINT')} + ' €'">0.00 €</p>
-			    </div>
-			</div>
-			<div class="col-md-4">
-			    <div class="card p-3">
-			        <h5>Posiciones</h5>
-			        <p th:text="${usuario.cartera.posiciones.size()} + ' activos'">0 activos</p>
-			    </div>
-			</div>
+            <div class="col-md-4">
+                <div class="card p-3">
+                    <h5>Saldo disponible</h5>
+                    <p th:text="${#numbers.formatDecimal(usuario.saldo, 1, 'POINT', 2, 'POINT')} + ' €'">0.00 €</p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card p-3">
+                    <h5>Posiciones</h5>
+                    <p th:text="${usuario.cartera.posiciones.size()} + ' activos'">0 activos</p>
+                </div>
+            </div>
+
             <div class="col-md-4">
                 <div class="card p-3">
                     <h5>Transacciones</h5>
@@ -60,145 +77,276 @@
             </div>
         </div>
 
+        <!-- Tabla cartera -->
         <div class="row mt-5">
-		    <div class="col-12">
-		        <div class="card p-3">
-		            <h5>Mi Cartera</h5>
-		            <table class="table table-hover">
-		                <thead>
-		                    <tr>
-								<th>Criptomoneda</th>
-		                        <th>Activo</th>
-		                        <th>Cantidad</th>
-		                        <th>Precio Promedio Comprado</th>
-		                        <th>Valor Actual</th>
-								<th>Ganancias/Perdidas</th>
-								<th>Acción</th>
-		                    </tr>
-		                </thead>
-		                <tbody>
-		                    <tr th:each="posicion : ${usuario.cartera.posiciones}">
-								<td><img th:src="@{/img/{img}(img=${posicion.activo.imagen})}" class="activo-img" alt="Imagen"></td>
-		                        <td th:text="${posicion.activo.nombre}">BTC</td>
-		                        <td th:text="${posicion.cantidad}">1.5</td>
-		                        <td th:text="${posicion.precioPromedio} + ' €'">120 €</td>
-		                        <td th:text="${posicion.valorActual} + ' €'">180 €</td>
-								<td th:text="${#numbers.formatDecimal(posicion.gananciaPerdida, 1, 'POINT', 2, 'POINT')} + ' €'">180 €</td>
-								<td>
-								    <button class="btn btn-danger" 
-								            th:onclick="'venderActivo(' + ${posicion.activo.id} + ')'">
-								        Vender
-								    </button>
-								</td>
-		                    </tr>
-		                    <tr th:if="${#lists.isEmpty(usuario.cartera.posiciones)}">
-		                        <td colspan="4" class="text-center">No tienes activos en tu cartera</td>
-		                    </tr>
-		                </tbody>
-		            </table>
+            <div class="col-12">
+                <div class="card p-3">
+                    <h5>Mi Cartera</h5>
+
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Criptomoneda</th>
+                                <th>Activo</th>
+                                <th>Cantidad</th>
+                                <th>Precio Promedio Comprado</th>
+                                <th>Ganancias/Perdidas</th>
+                                <th>Acción</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <tr th:each="posicion : ${usuario.cartera.posiciones}">
+                                <td>
+                                    <img th:src="@{/img/{img}(img=${posicion.activo.imagen})}"
+                                         class="activo-img" alt="Imagen">
+                                </td>
+                                <td th:text="${posicion.activo.nombre}">BTC</td>
+                                <td th:text="${posicion.cantidad}">1.5</td>
+                                <td th:text="${posicion.precioPromedio} + ' €'">120 €</td>
+                                <td th:text="${#numbers.formatDecimal(posicion.gananciaPerdida, 1, 'POINT', 2, 'POINT')} + ' €'">180 €</td>
+
+                                <td>
+                                    <button class="btn btn-danger"
+                                            th:onclick="'venderActivo(' + ${posicion.activo.id} + ')'">
+                                        Vender
+                                    </button>
+                                </td>
+                            </tr>
+
+                            <tr th:if="${#lists.isEmpty(usuario.cartera.posiciones)}">
+                                <td colspan="6" class="text-center">No tienes activos en tu cartera</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+		
+		<!-- Dashboard de Gráficos -->
+		        <div class="row mt-5">
+		            <div class="col-12">
+		                <div class="card p-4">
+		                    <h4 class="mb-3">📈 Evolución de Precios (Tiempo Real)</h4>
+		                    <p>Gráficos individuales actualizados cada 5 segundos.</p>
+
+		                    <div id="contenedor-graficos" class="row gy-4"></div>
+		                </div>
+		            </div>
 		        </div>
-		    </div>
-		</div>
-		
-		<!-- Tabla de activos para comprar -->
-		<div class="row mt-4" style="margin-bottom: 30px;">
-			<div class="col-12">
-				<div class="card p-3">
-					<h5>Comprar Activos</h5>
-					<table class="table table-hover">
-						<thead>
-							<tr>
-								<th>Imagen</th>
-		                        <th>Activo</th>
-		                        <th>Precio Actual</th>
-		                        <th>Cantidad</th>
-		                        <th>Acción</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr th:each="activo : ${activos}">
-								<td><img th:src="@{/img/{img}(img=${activo.imagen})}" class="activo-img" alt="Imagen"></td>
-		                        <td th:text="${activo.nombre}">BTC</td>
-								<td th:id="'precio-' + ${activo.id}" th:text="${activo.precioActual} + ' €'">100 €</td>
-								<td><input type="number" min="1" th:id="'cantidad_' + ${activo.id}" class="form-control" value="1"></td>
-								<td><button class="btn btn-primary"th:onclick="'comprarActivo(' + ${activo.id} + ',' + '\'' + '#cantidad_' + ${activo.id} + '\'' + ')'">Comprar</button></td>
-		                    </tr>
-						</tbody>
-					</table>
-				</div>
-			</div>
-		</div>
-		
-		<footer>
-		    <p>© 2025 Jhonatan Romero - Software Developer</p>
-		</footer>
-				
+
+        <!-- Tabla compra de activos -->
+        <div class="row mt-4" style="margin-bottom: 30px;">
+            <div class="col-12">
+                <div class="card p-3">
+                    <h5>Comprar Activos</h5>
+
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Imagen</th>
+                                <th>Activo</th>
+                                <th>Precio Actual</th>
+                                <th>Cantidad</th>
+                                <th>Acción</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <tr th:each="activo : ${activos}">
+                                <td>
+                                    <img th:src="@{/img/{img}(img=${activo.imagen})}"
+                                         class="activo-img" alt="Imagen">
+                                </td>
+                                <td th:text="${activo.nombre}">BTC</td>
+                                <td th:id="'precio-' + ${activo.id}" th:text="${activo.precioActual} + ' €'">100 €</td>
+
+                                <td>
+                                    <input type="number" min="1" th:id="'cantidad_' + ${activo.id}"
+                                           class="form-control" value="1">
+                                </td>
+
+                                <td>
+                                    <button class="btn btn-primary"
+                                            th:onclick="'comprarActivo(' + ${activo.id} + ',' + '\'' + '#cantidad_' + ${activo.id} + '\'' + ')'">
+                                        Comprar
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+
+                    </table>
+
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>© 2025 Jhonatan Romero - Software Developer</p>
+        </footer>
+
+    </div>
+
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-	<script>
-	function comprarActivo(activoId, cantidadInputId) {
-	    const cantidad = document.getElementById(cantidadInputId.substring(1)).value; // quitar #
-	    
-	    fetch(`/api/comprar/${activoId}?cantidad=${cantidad}`, { method: 'POST' })
-	        .then(response => response.json())
-	        .then(data => {
-	            if (data.mensaje) {
-	                alert(data.mensaje); // Compra correcta
-	                window.location.reload();
-	            } else if (data.error) {
-	                alert("Error: " + data.error); // Mostrar error del servidor
-	            }
-	        })
-	        .catch(err => {
-	            console.error(err);
-	            alert("Error en la conexión con el servidor");
-	        });
-	}
-	
-	function venderActivo(activoId) {
-	    const cantidad = prompt("¿Cuánta cantidad quieres vender?");
 
-	    if (!cantidad || cantidad <= 0) {
-	        alert("Cantidad inválida");
-	        return;
+    <script>
+        function comprarActivo(activoId, cantidadInputId) {
+            const cantidad = document.getElementById(cantidadInputId.substring(1)).value;
+
+            fetch(`/api/comprar/${activoId}?cantidad=${cantidad}`, { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.mensaje) {
+                        alert(data.mensaje);
+                        window.location.reload();
+                    } else if (data.error) {
+                        alert("Error: " + data.error);
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert("Error en la conexión con el servidor");
+                });
+        }
+    </script>
+
+    <script>
+        function venderActivo(activoId) {
+            const cantidad = prompt("¿Cuánta cantidad quieres vender?");
+
+            if (!cantidad || cantidad <= 0) {
+                alert("Cantidad inválida");
+                return;
+            }
+
+            fetch(`/api/vender/${activoId}?cantidad=${cantidad}`, { method: 'POST' })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.error) {
+                        alert("Error: " + data.error);
+                    } else {
+                        alert(
+                            `Venta realizada:\n` +
+                            `Activo: ${data.activo}\n` +
+                            `Cantidad vendida: ${data.cantidadVendida}\n` +
+                            `Ganancia/Pérdida: ${data.gananciaPerdida.toFixed(2)} €`
+                        );
+                        window.location.reload();
+                    }
+                });
+        }
+    </script>
+
+    <script>
+        setInterval(() => {
+            fetch('/api/precios')
+                .then(res => res.json())
+                .then(data => {
+                    Object.keys(data).forEach(id => {
+                        const celda = document.getElementById('precio-' + id);
+                        if (celda) {
+                            celda.innerText = data[id] + ' €';
+                        }
+                    });
+                });
+        }, 5000);
+    </script>
+	
+	<script>	
+		function generarValorNuevo(valor) {
+			const variacion = (Math.random()-0.5) * (valor*0.03);
+			return valor + variacion;
+		}
+
+		// Mapa id → nombre
+		var activosMapa = {};
+		document.querySelectorAll('table tbody tr').forEach(row=>{
+	    	const idInput = row.querySelector('input[type=number]');
+	    	const nombreTd = row.querySelector('td:nth-child(2)');
+	    if(idInput && nombreTd){
+	        const id = idInput.id.replace('cantidad_','');
+	        activosMapa[id] = nombreTd.innerText.trim();
 	    }
+	});
 
-	    fetch(`/api/vender/${activoId}?cantidad=${cantidad}`, { method: 'POST' })
-	        .then(res => res.json())
-	        .then(data => {
-	            if (data.error) {
-	                alert("Error: " + data.error);
-	            } else {
-	                alert(
-	                    `Venta realizada:\n` +
-	                    `Activo: ${data.activo}\n` +
-	                    `Cantidad vendida: ${data.cantidadVendida}\n` +
-	                    `Ganancia/Pérdida: ${data.gananciaPerdida.toFixed(2)} €`
-	                );
-	                window.location.reload();
+	// Contenedores de gráficos y datos
+	var charts = {};
+	var chartData = {};
+
+	// Inicialización
+	fetch("/api/precios").then(r=>r.json()).then(data=>{
+	    const contenedor = document.getElementById("contenedor-graficos");
+	    Object.entries(data).forEach(([id, precio])=>{
+	        const nombre = activosMapa[id] || "Cripto "+id;
+
+	        // Columna Bootstrap
+	        const col = document.createElement("div");
+	        col.classList.add("col-md-4","col-sm-6");
+
+	        const card = document.createElement("div");
+	        card.classList.add("card","p-3");
+	        card.style.background = "#1a1a1a";
+	        card.style.borderRadius = "12px";
+	        card.style.color = "white";
+
+	        const canvas = document.createElement("canvas");
+	        canvas.id = "chart_"+id;
+	        canvas.classList.add("grafico-cripto");
+
+	        card.appendChild(canvas);
+	        col.appendChild(card);
+	        contenedor.appendChild(col);
+
+	        // Datos iniciales
+	        chartData[id] = Array(10).fill(precio).map((v,i)=>v + (Math.random()-0.5)*precio*0.05);
+
+	        charts[id] = new Chart(canvas.getContext("2d"), {
+	            type: "line",
+	            data: {
+	                labels:["T1","T2","T3","T4","T5","T6","T7","T8","T9","T10"],
+	                datasets:[{
+	                    label: nombre,
+	                    data: chartData[id],
+	                    borderColor: "rgba(75,192,192,1)",
+	                    borderWidth:2,
+	                    fill:false,
+	                    tension:0.3
+	                }]
+	            },
+	            options: {
+	                responsive:true,
+	                maintainAspectRatio:false,
+	                plugins:{
+	                    legend:{labels:{color:"white"}},
+	                    title:{display:true,text:"Evolución (precio: "+precio+"€)",color:"white"}
+	                },
+	                scales:{x:{ticks:{color:"white"}},y:{ticks:{color:"white"}}}
 	            }
 	        });
-	}
-	</script>
-	
-	<script>
-	    // Actualizar precios cada 5 segundos
-	    setInterval(() => {
-	        fetch('/api/precios')
-	            .then(res => res.json())
-	            .then(data => {
+	    });
 
-	                // Por cada activo, actualizar el precio en la tabla
-	                Object.keys(data).forEach(id => {
-	                    const celda = document.getElementById('precio-' + id);
-	                    if (celda) {
-	                        celda.innerText = data[id] + ' €';
-	                    }
-	                });
-
+	    // Actualización dinámica cada 5s
+	    setInterval(()=>{
+	        fetch("/api/precios").then(r=>r.json()).then(data=>{
+	            Object.entries(data).forEach(([id, precio])=>{
+	                if(charts[id]){
+	                    // Insertar nuevo valor
+	                    chartData[id].push(generarValorNuevo(precio));
+	                    // Mantener solo 10 últimos
+	                    if(chartData[id].length>10) chartData[id].shift();
+	                    // Actualizar gráfico
+	                    charts[id].data.datasets[0].data = chartData[id];
+	                    charts[id].options.plugins.title.text = "Evolución (precio: "+precio+"€)";
+	                    charts[id].update();
+	                }
 	            });
-	    }, 5000);
+	        });
+	    },5000);
+	});
 	</script>
 </body>
 </html>
+

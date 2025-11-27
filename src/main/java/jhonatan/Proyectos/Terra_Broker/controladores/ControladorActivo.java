@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import jhonatan.Proyectos.Terra_Broker.modelo.Activo;
 import jhonatan.Proyectos.Terra_Broker.modelo.Usuario;
 import jhonatan.Proyectos.Terra_Broker.repository.ActivoRepository;
+
 import jhonatan.Proyectos.Terra_Broker.repository.UsuarioRepository;
 import jhonatan.Proyectos.Terra_Broker.security.MyUserDetails;
 import jhonatan.Proyectos.Terra_Broker.util.CarteraService;
@@ -31,7 +32,6 @@ public class ControladorActivo {
     @Autowired
     private UsuarioRepository usuarioRepository;
     
-
     @GetMapping("/precios")
     public Map<Long, Double> obtenerPrecios() {
 

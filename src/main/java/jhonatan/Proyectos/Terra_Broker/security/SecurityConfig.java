@@ -14,7 +14,7 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-
+	
     @Autowired
     private MyUserDetailsService userDetailsService;
 
@@ -22,7 +22,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/css/**", "/js/**", "/images/**", "/registroUsuario", "/registroUsuario/**").permitAll()
+                .requestMatchers("/css/**", "/js/**", "/img/**", "/registroUsuario", "/registroUsuario/**").permitAll()
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form

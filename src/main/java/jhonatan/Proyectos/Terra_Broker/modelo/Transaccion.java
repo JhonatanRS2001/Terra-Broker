@@ -15,6 +15,7 @@ public class Transaccion {
     private Double cantidad;
     private Double precioUnitario;
     private Double total;
+    private Double ganancia;
 
     @ManyToOne
     @JoinColumn(name = "usuario_id")
@@ -28,14 +29,15 @@ public class Transaccion {
     	
     }
     
-    public Transaccion(Usuario usuario, Activo activo, String tipo, Double cantidad, Double precioUnitario, Double total) {
+    public Transaccion(Usuario usuario, Activo activo, String tipo, Double cantidad, Double precioUnitario, Double total, Double ganancia) {
         this.usuario = usuario;
         this.activo = activo;
         this.tipo = tipo;
         this.cantidad = cantidad;
         this.precioUnitario = precioUnitario;
         this.total = total;
-        this.fecha = LocalDateTime.now(); // Se asigna la fecha al crear la transacción
+        this.fecha = LocalDateTime.now();
+        this.ganancia = ganancia;
     }
     
     public Transaccion(Usuario usuario, Activo activo, String tipo, Double cantidad, Double precioUnitario) {
@@ -44,7 +46,7 @@ public class Transaccion {
         this.tipo = tipo;
         this.cantidad = cantidad;
         this.precioUnitario = precioUnitario;
-        this.total = 0.00;
+        this.total = cantidad * precioUnitario;
         this.fecha = LocalDateTime.now(); // Se asigna la fecha al crear la transacción
     }
     
@@ -112,6 +114,14 @@ public class Transaccion {
 		this.activo = activo;
 	}
 	
+	public Double getGanancia() {
+		return ganancia;
+	}
+
+	public void setGanancia(Double ganancia) {
+		this.ganancia = ganancia;
+	}
+
 	@Override
 	public String toString() {
 		return "Transaccion [id=" + id + ", fecha=" + fecha + ", tipo=" + tipo + ", cantidad=" + cantidad

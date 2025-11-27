@@ -9,21 +9,21 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <style>
-        body { background-color: #f4f6f8; font-family: Arial, sans-serif; }
-        .navbar { background-color: #4f46e5; }
+        body { background-image: url('/img/brk.jpg'); background-size: cover; background-repeat: no-repeat; background-attachment: fixed; background-position: center center; font-family: Arial, sans-serif; }
+		.navbar { background-color: transparent !important; box-shadow: none !important; }
         .navbar-brand, .nav-link { color: white !important; }
         .card { border-radius: 10px; }
         h2 { margin-bottom: 0.5rem; }
-		footer { text-align: center; padding: 1.5em; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; color: #222831; background-size: 400% 400%;}
+		footer { text-align: center; padding: 1.5em; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; color: white; background-size: 400% 400%;}
     </style>
 </head>
 
 <body>
 
     <!-- NAVBAR -->
-    <nav class="navbar navbar-expand-lg">
+    <nav class="navbar navbar-expand-lg" style="margin-bottom: -40px;">
         <div class="container-fluid">
-            <a class="navbar-brand" th:href="@{/dashboard}">TerraBroker</a>
+			<a th:href="@{/dashboard}"><img style="height:150px; width:200px;" th:src="@{/img/logoTB-New.png}" alt="logo"></a>
             <div class="collapse navbar-collapse">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
@@ -43,15 +43,15 @@
     <!-- CONTENIDO PRINCIPAL -->
     <div class="container mt-5">
 
-        <h2>Mi Cuenta</h2>
-        <p>Visualiza y actualiza tu información personal.</p>
+        <h2 style="color: white;">Mi Cuenta</h2>
+        <p style="color: white;">Visualiza y actualiza tu información personal.</p>
 
         <div class="row mt-4">
 
             <!-- SALDO DISPONIBLE -->
             <div class="col-md-4 mb-4">
                 <div class="card p-3">
-                    <h5>Saldo Disponible</h5>
+                    <h5 id="saldo">Saldo Disponible</h5>
                     <p th:text="${#numbers.formatDecimal(usuario.saldo, 1, 'POINT', 2, 'POINT')} + ' €'">
                         0.00 €
                     </p>
@@ -61,7 +61,7 @@
                         <h6 style="margin-top: 38px;">Ingresar saldo</h6>
                         <div class="input-group">
                             <input type="number" min="1" id="cantidadSaldo" class="form-control" placeholder="Cantidad a ingresar">
-                            <button class="btn btn-success" onclick="ingresarSaldo()">Ingresar</button>
+                            <button class="btn btn-success" onclick="ingresarSaldo()" style="margin-left: 10px;">Ingresar</button>
                         </div>
                     </div>
                 </div>
@@ -129,41 +129,83 @@
                         <button class="btn btn-primary" type="submit">Actualizar</button>
                     </form>
                 </div>
-            </div>
+			</div>
+			<div class="col-md-6">
+			    <div class="card p-3" style="max-height: 445px;">
+			        <h5 style="margin-top: -10px;">Historial de Saldo</h5>
+			        <canvas id="chartSaldo" width="100%" height="300"></canvas>
+			    </div>
+			</div>
         </div>
+		
+		<!-- Historial de ingresos -->
+		<div class="card p-3 mb-4">
+		    <h5>Historial de Ingresos</h5>
+		    <div class="table-responsive">
+		        <table class="table table-striped mb-0">
+		            <thead>
+		                <tr>
+		                    <th>Fecha</th>
+		                    <th>Tipo</th>
+		                    <th>Cantidad</th>
+		                </tr>
+		            </thead>
+		            <tbody>
+		                <tr th:each="tx : ${usuario.transacciones}" th:if="${tx.tipo == 'INGRESO'}">
+		                    <td th:text="${#temporals.format(tx.fecha, 'dd/MM/yyyy HH:mm')}"></td>
+		                    <td th:text="${tx.tipo}"></td>
+		                    <td th:text="${#numbers.formatDecimal(tx.total,1,'POINT',2,'POINT')} + ' €'"></td>
+		                </tr>
+		                <tr th:if="${#lists.isEmpty(usuario.transacciones.?[tipo=='INGRESO'])}">
+		                    <td colspan="3" class="text-center">No hay ingresos registrados.</td>
+		                </tr>
+		            </tbody>
+		        </table>
+		    </div>
+		</div>
 
         <!-- HISTORIAL DE TRANSACCIONES -->
-        <div class="card p-3">
-            <h5>Historial de Transacciones</h5>
-            <div class="table-responsive">
-                <table class="table table-striped mb-0">
-                    <thead>
-                        <tr>
-                            <th>Fecha</th>
-                            <th>Activo</th>
-                            <th>Tipo</th>
-                            <th>Cantidad</th>
-                            <th>Precio Compra/Venta</th>
-                            <th>Resultado Transaccion</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr th:each="tx : ${usuario.transacciones}">
-                            <td th:text="${#temporals.format(tx.fecha, 'dd/MM/yyyy HH:mm')}"></td>
-                            <td th:text="${tx.activo.nombre}"></td>
-                            <td th:text="${tx.tipo}"></td>
-                            <td th:text="${#numbers.formatDecimal(tx.cantidad,1,'POINT',2,'POINT')}"></td>
-                            <td th:text="${#numbers.formatDecimal(tx.precioUnitario,1,'POINT',2,'POINT')} + ' €'"></td>
-                            <td th:text="${#numbers.formatDecimal(tx.total,1,'POINT',2,'POINT')} + ' €'"></td>
-                        </tr>
-
-                        <tr th:if="${#lists.isEmpty(usuario.transacciones)}">
-                            <td colspan="6" class="text-center">Aún no tienes transacciones.</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
+		<div class="card p-3">
+		    <h5 id="transacciones">Historial de Compras/Ventas</h5>
+		    <div class="table-responsive">
+		        <table class="table table-striped mb-0">
+		            <thead>
+		                <tr>
+		                    <th>Fecha</th>
+		                    <th>Activo</th>
+		                    <th>Tipo</th>
+		                    <th>Cantidad</th>
+		                    <th>Precio Compra/Venta</th>
+							<th>Ganancia/Perdida</th>
+		                    <th>Resultado Transacción</th>
+		                </tr>
+		            </thead>
+		            <tbody>
+		                <tr th:each="tx : ${usuario.transacciones}" th:if="${tx.tipo == 'VENTA'}">
+		                    <td th:text="${#temporals.format(tx.fecha, 'dd/MM/yyyy HH:mm')}"></td>
+		                    <td th:text="${tx.activo.nombre}"></td>
+		                    <td th:text="${tx.tipo}"></td>
+		                    <td th:text="${#numbers.formatDecimal(tx.cantidad,1,'POINT',2,'POINT')}"></td>
+		                    <td th:text="${#numbers.formatDecimal(tx.precioUnitario,1,'POINT',2,'POINT')} + ' €'"></td>
+							<td th:text="${#numbers.formatDecimal(tx.ganancia,1,'POINT',2,'POINT')} + ' €'"></td>
+		                    <td th:text="${#numbers.formatDecimal(tx.total,1,'POINT',2,'POINT')} + ' €'"></td>
+		                </tr>
+						<tr th:each="tx : ${usuario.transacciones}" th:if="${tx.tipo == 'COMPRA'}">
+							<td th:text="${#temporals.format(tx.fecha, 'dd/MM/yyyy HH:mm')}"></td>
+							<td th:text="${tx.activo.nombre}"></td>
+							<td th:text="${tx.tipo}"></td>
+							<td th:text="${#numbers.formatDecimal(tx.cantidad,1,'POINT',2,'POINT')}"></td>
+							<td th:text="${#numbers.formatDecimal(tx.precioUnitario,1,'POINT',2,'POINT')} + ' €'"></td>
+							<td>0€</td>
+							<td>0€</td>
+						</tr>
+		                <tr th:if="${#lists.isEmpty(usuario.transacciones.?[tipo!='INGRESO'])}">
+		                    <td colspan="6" class="text-center">Aún no tienes transacciones de compra/venta.</td>
+		                </tr>
+		            </tbody>
+		        </table>
+		    </div>
+		</div>
 
     </div>
 	
@@ -189,6 +231,43 @@
                 });
         }
     </script>
+	
+	<script>
+		fetch('/historialSaldo')
+		  .then(res => res.json())
+		  .then(data => {
+		    const labels = data.map(h => new Date(h.fecha).toLocaleString());
+		    const saldos = data.map(h => h.saldo);
 
+		    const ctx = document.getElementById('chartSaldo').getContext('2d');
+		    new Chart(ctx, {
+		        type: 'line',
+		        data: {
+		            labels: labels,
+		            datasets: [{
+		                label: 'Saldo (€)',
+		                data: saldos,
+		                borderColor: 'rgba(75,192,192,1)',
+		                backgroundColor: 'rgba(75,192,192,0.2)',
+		                tension: 0.3,
+		                fill: true,
+		                pointRadius: 4
+		            }]
+		        },
+		        options: {
+		            responsive: true,
+		            maintainAspectRatio: false,
+		            scales: {
+		                y: { beginAtZero: false },
+		                x: { ticks: { color: 'black' } }
+		            },
+		            plugins: {
+		                title: { display: true, text: 'Historial de Saldo', color: 'black' },
+		                legend: { labels: { color: 'black' } }
+		            }
+		        }
+		    });
+		});
+	</script>
 </body>
 </html>

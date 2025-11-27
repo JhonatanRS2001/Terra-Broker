@@ -124,7 +124,7 @@ public class CarteraService {
         usuario.setSaldo(usuario.getSaldo() + totalVenta);
         
         //REGISTRAR TRANSACCIÓN DE VENTA
-        Transaccion tx = new Transaccion(usuario, posicion.getActivo(), "VENTA", cantidadAVender, precioActual, ganancia);
+        Transaccion tx = new Transaccion(usuario, posicion.getActivo(), "VENTA", cantidadAVender, precioActual, totalVenta, ganancia);
         usuario.getTransacciones().add(tx);
 
         usuarioRepository.save(usuario);

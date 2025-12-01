@@ -64,6 +64,12 @@ public class ControladorUsuario {
     
     @PostMapping("/miCuenta/actualizar")
     public String actualizarMisDatos(Usuario usuario) {
+        Usuario actual = dao.consultaUsuario(usuario.getId()); // Obtener datos actuales
+
+        if ("demo@hotmail.es".equals(actual.getEmail())) {
+            usuario.setEmail(actual.getEmail()); // Mantener email del demo
+        }
+
         dao.modificarUsuario(usuario);
         return "confirmacion";
     }

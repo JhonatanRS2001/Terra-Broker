@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
 import jhonatan.Proyectos.Terra_Broker.dao.TerraBrokerDAO;
 import jhonatan.Proyectos.Terra_Broker.modelo.Transaccion;
 import jhonatan.Proyectos.Terra_Broker.modelo.Usuario;
@@ -122,5 +124,15 @@ public class ControladorUsuario {
         }
 
         return historial; 
+    }
+    
+    @GetMapping("/demo-login")
+    public String demoLogin(HttpServletRequest request) {
+        try {
+            request.login("demo@hotmail.es", "1234");
+            return "redirect:/dashboard";
+        } catch (ServletException e) {
+            return "redirect:/login?error";
+        }
     }
 }

@@ -3,6 +3,7 @@ package jhonatan.Proyectos.Terra_Broker.dao;
 import org.springframework.stereotype.Repository;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import jhonatan.Proyectos.Terra_Broker.modelo.Usuario;
@@ -34,6 +35,16 @@ public class TerraBrokerDAO {
 	
 	public Usuario consultaUsuario(Long id) {
 		return em.find(Usuario.class, id);
+	}
+	
+	public Usuario buscarPorEmail(String email) {
+	    try {
+	        return em.createQuery("SELECT u FROM Usuario u WHERE u.email = :email", Usuario.class)
+	                .setParameter("email", email)
+	                .getSingleResult();
+	    } catch (NoResultException e) {
+	        return null;
+	    }
 	}
 
 }

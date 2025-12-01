@@ -106,29 +106,28 @@
                         <div class="mb-3">
                             <label class="form-label" for="nombre">Nombre</label>
                             <input id="nombre" name="nombre" type="text" class="form-control"
-                                   th:value="${usuario.nombre}">
+                                   th:value="${usuario.nombre}" th:disabled="${usuario.email == 'demo@hotmail.es'}">
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label" for="apellido">Apellido</label>
                             <input id="apellido" name="apellido" type="text" class="form-control"
-                                   th:value="${usuario.apellido}">
+                                   th:value="${usuario.apellido}" th:disabled="${usuario.email == 'demo@hotmail.es'}">
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label" for="pais">País</label>
                             <input id="pais" name="pais" type="text" class="form-control"
-                                   th:value="${usuario.pais}">
+                                   th:value="${usuario.pais}" th:disabled="${usuario.email == 'demo@hotmail.es'}">
                         </div>
 
 						<div class="mb-3">
 						    <label class="form-label" for="email">Email</label>
 						    <input id="email" name="email" type="email" class="form-control"
-						           th:value="${usuario.email}"
-						           th:disabled="${usuario.email == 'demo@hotmail.es'}">
+						           th:value="${usuario.email}" th:disabled="${usuario.email == 'demo@hotmail.es'}">
 						</div>
 
-                        <button class="btn btn-primary" type="submit">Actualizar</button>
+                        <button class="btn btn-primary" type="submit" th:disabled="${usuario.email == 'demo@hotmail.es'}">Actualizar</button>
                     </form>
                 </div>
 			</div>

@@ -14,6 +14,8 @@ public class Usuario {
     private String apellido;
     private int edad;
     private String pais;
+    
+    @Column(unique = true)
     private String email;
     private String password;
     private Double saldo=0.00;

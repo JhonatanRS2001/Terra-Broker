@@ -48,28 +48,36 @@ public class ControladorUsuario {
         return "registroUsuario";
     }
 
-    @PostMapping("/registroUsuario/submit")
-    public String altaClienteSubmit(@ModelAttribute Usuario usuario, Model model) {
-        System.out.println("ALTA USUARIO");
+	@PostMapping("/registroUsuario/submit")
+	public String altaClienteSubmit(@ModelAttribute Usuario usuario, Model model) {
 
-        //CIFRAR CONTRASEÑA
-        String passwordCifrada = passwordEncoder.encode(usuario.getPassword());
-        usuario.setPassword(passwordCifrada);
+	    System.out.println("ALTA USUARIO");
 
-        dao.altaUsuario(usuario);
+	    //VALIDAR SI EL CORREO YA EXISTE
+	    Usuario existente = dao.buscarPorEmail(usuario.getEmail());
 
-        model.addAttribute("usuarioForm", usuario);
-        return "confirmacionRegistro";
-    }
+	    if (existente != null) {
+	        model.addAttribute("error", "El correo ya está en uso. Prueba con otro.");
+	        model.addAttribute("usuarioForm", usuario); 
+	        return "registroUsuario";
+	    }
+
+	    //CIFRAR CONTRASEÑA
+	    String passwordCifrada = passwordEncoder.encode(usuario.getPassword());
+	    usuario.setPassword(passwordCifrada);
+
+	    //GUARDAR USUARIO
+	    dao.altaUsuario(usuario);
+
+	    model.addAttribute("usuarioForm", usuario);
+	    return "confirmacionRegistro";
+	}
     
     @PostMapping("/miCuenta/actualizar")
     public String actualizarMisDatos(Usuario usuario) {
-        Usuario actual = dao.consultaUsuario(usuario.getId()); // Obtener datos actuales
-
-        if ("demo@hotmail.es".equals(actual.getEmail())) {
-            usuario.setEmail(actual.getEmail()); // Mantener email del demo
+        if ("demo@hotmail.es".equals(usuario.getEmail())) {
+            return "redirect:/miCuenta?error=no-demo-edit";
         }
-
         dao.modificarUsuario(usuario);
         return "confirmacion";
     }
